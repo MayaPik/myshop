@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ProductCard from "../components/ProductCard";
+
 import "../index.css";
 
 export default function Welcome() {
@@ -13,6 +14,7 @@ export default function Welcome() {
   return (
     <div>
       <h1>LATEST PRODUCTS</h1>
+
       <div className="list">
         {welcome ? (
           welcome.map((each) => <ProductCard ProductId={each} />)

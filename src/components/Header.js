@@ -6,6 +6,8 @@ import {
   Container,
   Toolbar,
 } from "@mui/material";
+import { ShoppingCart, LocalMall } from "@mui/icons-material";
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../index.css";
@@ -13,7 +15,6 @@ import "../index.css";
 export default function Header() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
-
   useEffect(() => {
     fetch("https://fakestoreapi.com/products/categories")
       .then((response) => response.json())
@@ -22,7 +23,7 @@ export default function Header() {
 
   const goToCategory = (event) => {
     event.preventDefault();
-    navigate(`/category/${event.target.innerText}`);
+    navigate(`/category/${event.target.innerText.toLowerCase()}`);
   };
 
   const goToCheckout = (event) => {
@@ -31,7 +32,7 @@ export default function Header() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ minWidth: "100vw" }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
@@ -55,7 +56,7 @@ export default function Header() {
               textDecoration: "none",
             }}
           >
-            OUR SHOP
+            <LocalMall /> OUR SHOP <LocalMall />
           </Typography>
           <Box
             sx={{
@@ -66,7 +67,13 @@ export default function Header() {
           >
             {categories.map((category) => (
               <MenuItem key={category} onClick={goToCategory}>
-                <Typography textAlign="center">{category}</Typography>
+                <Typography
+                  textAlign="center"
+                  className="capitalize"
+                  sx={{ fontWeight: "500" }}
+                >
+                  {category}
+                </Typography>
               </MenuItem>
             ))}
             <MenuItem
@@ -76,7 +83,10 @@ export default function Header() {
                 marginLeft: "auto",
               }}
             >
-              <Typography textAlign="center">Cart</Typography>
+              <Typography textAlign="center">
+                <ShoppingCart />
+                <b> Cart </b>
+              </Typography>
             </MenuItem>
           </Box>
         </Toolbar>
