@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import PayPalButton from "../components/PaypalButton";
+import { addOne, removeOne } from "../actions/cartActions";
+
 export default function Checkout() {
   const [cartItems, setCartItems] = useState(
     JSON.parse(localStorage.getItem("cartItems")) || []
@@ -11,35 +13,16 @@ export default function Checkout() {
     setCartItems(items);
   }, []);
 
-  const removeOne = (e) => {
-    e.preventDefault();
-    const key = e.target.dataset.key;
-    const item = cartItems.find((cart) => cart.id === Number(key));
-    if (item && item.amount > 1) {
-      --item.amount;
-    }
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-    setCartItems(JSON.parse(localStorage.getItem("cartItems")));
-  };
+  const updateLocalStorage = useCallback((items) => {
+    localStorage.setItem("cartItems", JSON.stringify(items));
+  }, []);
 
-  const addOne = (e) => {
-    e.preventDefault();
-    const key = e.target.dataset.key;
-    const item = cartItems.find((cart) => cart.id === Number(key));
-    if (item) {
-      ++item.amount;
-    }
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-    setCartItems(JSON.parse(localStorage.getItem("cartItems")));
-  };
-
-  const deleteOne = (e) => {
-    e.preventDefault();
-    const key = e.target.dataset.key;
-    let filterCart = cartItems.filter((cart) => cart.id !== Number(key));
-    localStorage.setItem("cartItems", JSON.stringify(filterCart));
-    setCartItems(JSON.parse(localStorage.getItem("cartItems")));
-  };
+  useEffect(() => {
+    const items = JSON.parse(localStorage.getItem("cartItems")) || [];
+    setCartItems(items);
+    addOne(updateLocalStorage, setCartItems);
+    removeOne(updateLocalStorage, setCartItems);
+  }, [updateLocalStorage]);
 
   return (
     <div>
@@ -128,11 +111,19 @@ export default function Checkout() {
                 },
               }}
             >
-              <Button onClick={removeOne} data-key={each.id} size="small">
+              <Button
+                onClick={() =>
+                  removeOne(updateLocalStorage, setCartItems, each.id)
+                }
+              >
                 -
               </Button>
               {each.amount}
-              <Button onClick={addOne} data-key={each.id} size="small">
+              <Button
+                onClick={() =>
+                  addOne(updateLocalStorage, setCartItems, each.id)
+                }
+              >
                 +
               </Button>
 
@@ -145,9 +136,6 @@ export default function Checkout() {
                 {(each.price * each.amount).toFixed(2)} ${" "}
               </Typography>
             </Box>
-            <Button onClick={deleteOne} data-key={each.id}>
-              X
-            </Button>
           </Box>
         ))}
         {cartItems.length === 0 ? (

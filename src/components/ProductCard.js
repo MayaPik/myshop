@@ -16,6 +16,8 @@ import CartModal from "./CartModal";
 import "../index.css";
 
 export default function ProductCard({ ProductId }) {
+  const [imageLoading, setImageLoading] = useState(true);
+
   const navigate = useNavigate();
   const { open, handleOpen, handleClose } = useModal();
 
@@ -29,7 +31,18 @@ export default function ProductCard({ ProductId }) {
   useEffect(() => {
     fetch(`https://fakestoreapi.com/products/${ProductId}`)
       .then((response) => response.json())
-      .then((result) => setProduct(result));
+      .then((result) => {
+        setProduct(result);
+        // Asynchronously load the product image
+        const loadImage = async () => {
+          const image = new Image();
+          image.src = result.image;
+          image.onload = () => {
+            setImageLoading(false);
+          };
+        };
+        loadImage();
+      });
   }, [ProductId]);
 
   const transferToProdcut = (event) => {
@@ -51,12 +64,17 @@ export default function ProductCard({ ProductId }) {
         boxShadow: 0,
       }}
     >
-      <img
-        className="imageCard"
-        src={product.image}
-        alt={product.title}
-        onClick={transferToProdcut}
-      />
+      {imageLoading ? (
+        <p>Loading image...</p>
+      ) : (
+        <img
+          className="imageCard"
+          src={product.image}
+          alt={product.title}
+          onClick={transferToProdcut}
+        />
+      )}
+
       <CardContent>
         <Typography variant="h6" color="text">
           {product?.price} $

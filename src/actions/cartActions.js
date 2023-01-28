@@ -33,16 +33,15 @@ export const addOne = (updateLocalStorage, setCartItems, itemId) => {
 export const removeOne = (updateLocalStorage, setCartItems, itemId) => {
   let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
   const item = cartItems.find((cart) => cart.id === Number(itemId));
-  if (item && item.amount > 1) {
-    --item.amount;
+  if (item) {
+    if (item.amount > 1) {
+      --item.amount;
+      updateLocalStorage(cartItems);
+      setCartItems(cartItems);
+    } else if (item.amount === 1) {
+      let filterCart = cartItems.filter((cart) => cart.id !== Number(itemId));
+      updateLocalStorage(filterCart);
+      setCartItems(filterCart);
+    }
   }
-  updateLocalStorage(cartItems);
-  setCartItems(cartItems);
-};
-
-export const deleteOne = (updateLocalStorage, setCartItems, itemId) => {
-  let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-  let filterCart = cartItems.filter((cart) => cart.id !== Number(itemId));
-  updateLocalStorage(filterCart);
-  setCartItems(filterCart);
 };

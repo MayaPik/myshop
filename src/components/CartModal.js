@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography, Modal, Button } from "@mui/material";
 
-import { addOne, deleteOne, removeOne } from "../actions/cartActions";
+import { addOne, removeOne } from "../actions/cartActions";
 
 export default function CartModal(props) {
   const nevigate = useNavigate();
@@ -19,7 +19,6 @@ export default function CartModal(props) {
     const items = JSON.parse(localStorage.getItem("cartItems")) || [];
     setCartItems(items);
     addOne(updateLocalStorage, setCartItems);
-    deleteOne(updateLocalStorage, setCartItems);
     removeOne(updateLocalStorage, setCartItems);
   }, [updateLocalStorage, open]);
 
@@ -114,13 +113,6 @@ export default function CartModal(props) {
                 }
               >
                 +
-              </Button>
-              <Button
-                onClick={() =>
-                  deleteOne(updateLocalStorage, setCartItems, each.id)
-                }
-              >
-                X
               </Button>
             </Box>
           ))}
